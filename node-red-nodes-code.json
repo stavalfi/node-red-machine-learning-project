@@ -1,0 +1,1306 @@
+[
+  {
+    "id": "b00783d3.2f248",
+    "type": "tab",
+    "label": "Flow 1",
+    "disabled": false,
+    "info": ""
+  },
+  {
+    "id": "449a6fb5.2809b",
+    "type": "mqtt in",
+    "z": "b00783d3.2f248",
+    "name": "messages consumer",
+    "topic": "esp/tomer",
+    "qos": "2",
+    "broker": "38bfdb9d.3b33c4",
+    "x": 114.77786254882812,
+    "y": 61.11117935180664,
+    "wires": [
+      [
+        "47eb7f56.ad589",
+        "8e43e84c.a1fa18",
+        "ba017ae2.011248"
+      ]
+    ],
+    "outputLabels": [
+      "msg.payload"
+    ]
+  },
+  {
+    "id": "63264864.610238",
+    "type": "mongodb2 in",
+    "z": "b00783d3.2f248",
+    "service": "_ext_",
+    "configNode": "7d16c78f.cce198",
+    "name": "save message",
+    "collection": "messages",
+    "operation": "save",
+    "x": 968.5555572509766,
+    "y": 184.00004959106445,
+    "wires": [
+      [
+        "9f866f95.5b969"
+      ]
+    ],
+    "inputLabels": [
+      "msg.payload"
+    ]
+  },
+  {
+    "id": "4b1f529e.f75acc",
+    "type": "ui_chart",
+    "z": "b00783d3.2f248",
+    "name": "",
+    "group": "bf377b10.426148",
+    "order": 0,
+    "width": 0,
+    "height": 0,
+    "label": "channels graph",
+    "chartType": "line",
+    "legend": "false",
+    "xformat": "HH:mm:ss",
+    "interpolate": "linear",
+    "nodata": "",
+    "dot": false,
+    "ymin": "",
+    "ymax": "",
+    "removeOlder": "5",
+    "removeOlderPoints": "",
+    "removeOlderUnit": "60",
+    "cutout": 0,
+    "useOneColor": false,
+    "colors": [
+      "#1f77b4",
+      "#aec7e8",
+      "#ff7f0e",
+      "#2ca02c",
+      "#98df8a",
+      "#d62728",
+      "#ff9896",
+      "#9467bd",
+      "#c5b0d5"
+    ],
+    "useOldStyle": false,
+    "x": 602.3969650268555,
+    "y": 128.66685009002686,
+    "wires": [
+      [],
+      []
+    ],
+    "inputLabels": [
+      "msg.payload"
+    ]
+  },
+  {
+    "id": "8cb09dc2.db50a",
+    "type": "mqtt in",
+    "z": "b00783d3.2f248",
+    "name": "new logged in user consumer",
+    "topic": "esp/tomer/connect",
+    "qos": "2",
+    "broker": "38bfdb9d.3b33c4",
+    "x": 139.33338928222656,
+    "y": 324.2222728729248,
+    "wires": [
+      [
+        "a42697.c8a90968",
+        "18eb98ee.5463b7"
+      ]
+    ],
+    "outputLabels": [
+      "msg.payload"
+    ]
+  },
+  {
+    "id": "d78620b1.b7106",
+    "type": "mongodb2 in",
+    "z": "b00783d3.2f248",
+    "service": "_ext_",
+    "configNode": "7d16c78f.cce198",
+    "name": "login user",
+    "collection": "users",
+    "operation": "save",
+    "x": 661.5556030273438,
+    "y": 450.8889503479004,
+    "wires": [
+      [
+        "98ca8c06.972e6"
+      ]
+    ],
+    "inputLabels": [
+      "msg.payload"
+    ],
+    "outputLabels": [
+      "msg.payload"
+    ]
+  },
+  {
+    "id": "ea57a247.1a064",
+    "type": "function",
+    "z": "b00783d3.2f248",
+    "name": "save last N users",
+    "func": "var list = context.get(\"statusList\") || [];\nlist.push(msg.payload);\nif (list.length > 1) {\n  list = list.slice(-1);\n}\ncontext.set(\"statusList\", list);\nmsg.payload = list;\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "x": 682.6666793823242,
+    "y": 393.11116218566895,
+    "wires": [
+      [
+        "88b8ab59.656ad8",
+        "a8706a2a.98aa88"
+      ]
+    ],
+    "inputLabels": [
+      "msg.payload"
+    ],
+    "outputLabels": [
+      "msg.payload"
+    ]
+  },
+  {
+    "id": "88b8ab59.656ad8",
+    "type": "ui_text",
+    "z": "b00783d3.2f248",
+    "group": "9b87206f.b6bac",
+    "order": 0,
+    "width": "6",
+    "height": "1",
+    "name": "",
+    "label": "Last user connected:",
+    "format": "{{msg.payload[0].username}}",
+    "layout": "row-spread",
+    "x": 953.77783203125,
+    "y": 389.77784156799316,
+    "wires": [],
+    "inputLabels": [
+      "msg.payload"
+    ]
+  },
+  {
+    "id": "18eb98ee.5463b7",
+    "type": "function",
+    "z": "b00783d3.2f248",
+    "name": "add connection time ",
+    "func": "return {\n    payload: {\n        username: msg.payload,\n        connectionStartTime: \n            new Date().toLocaleDateString()\n    }\n}",
+    "outputs": 1,
+    "noerr": 0,
+    "x": 421.55562591552734,
+    "y": 394.22226333618164,
+    "wires": [
+      [
+        "d78620b1.b7106",
+        "ea57a247.1a064"
+      ]
+    ],
+    "inputLabels": [
+      "msg.payload"
+    ],
+    "outputLabels": [
+      "msg.payload"
+    ]
+  },
+  {
+    "id": "a8706a2a.98aa88",
+    "type": "ui_text",
+    "z": "b00783d3.2f248",
+    "group": "9b87206f.b6bac",
+    "order": 0,
+    "width": "6",
+    "height": "1",
+    "name": "",
+    "label": "Time:",
+    "format": "{{msg.payload[0].connectionStartTime}}",
+    "layout": "row-spread",
+    "x": 907.1111831665039,
+    "y": 327.55560302734375,
+    "wires": [],
+    "inputLabels": [
+      "msg.payload"
+    ]
+  },
+  {
+    "id": "98ca8c06.972e6",
+    "type": "mongodb2 in",
+    "z": "b00783d3.2f248",
+    "service": "_ext_",
+    "configNode": "7d16c78f.cce198",
+    "name": "connected-users-mongodb",
+    "collection": "users",
+    "operation": "stats",
+    "x": 900.4444427490234,
+    "y": 449.7778606414795,
+    "wires": [
+      [
+        "477121bb.a6ddb"
+      ]
+    ],
+    "outputLabels": [
+      "msg.payload"
+    ]
+  },
+  {
+    "id": "9f503918.ec6668",
+    "type": "ui_text",
+    "z": "b00783d3.2f248",
+    "group": "9b87206f.b6bac",
+    "order": 0,
+    "width": "6",
+    "height": "1",
+    "name": "number of connected users",
+    "label": "Connected users until now:",
+    "format": "{{msg.payload}}",
+    "layout": "row-spread",
+    "x": 1526.2539520263672,
+    "y": 511.7619924545288,
+    "wires": [],
+    "inputLabels": [
+      "msg.payload"
+    ]
+  },
+  {
+    "id": "a6fbc53d.b0b7c8",
+    "type": "mqtt in",
+    "z": "b00783d3.2f248",
+    "name": "new logged out user consumer",
+    "topic": "esp/tomer/close",
+    "qos": "2",
+    "broker": "38bfdb9d.3b33c4",
+    "x": 144.88894653320312,
+    "y": 553.1111640930176,
+    "wires": [
+      [
+        "86231938.ac1748",
+        "66b712ba.d00eac"
+      ]
+    ],
+    "outputLabels": [
+      "msg.payload"
+    ]
+  },
+  {
+    "id": "66b712ba.d00eac",
+    "type": "mongodb2 in",
+    "z": "b00783d3.2f248",
+    "service": "_ext_",
+    "configNode": "7d16c78f.cce198",
+    "name": "logout user",
+    "collection": "users",
+    "operation": "findAndRemove",
+    "x": 523.7778472900391,
+    "y": 619.7777900695801,
+    "wires": [
+      [
+        "98ca8c06.972e6"
+      ]
+    ],
+    "inputLabels": [
+      "msg.payload"
+    ],
+    "outputLabels": [
+      "msg.payload"
+    ]
+  },
+  {
+    "id": "409e477b.e01338",
+    "type": "ui_chart",
+    "z": "b00783d3.2f248",
+    "name": "connected users graph",
+    "group": "9b87206f.b6bac",
+    "order": 0,
+    "width": 0,
+    "height": 0,
+    "label": "connected users graph",
+    "chartType": "line",
+    "legend": "false",
+    "xformat": "HH:mm:ss",
+    "interpolate": "linear",
+    "nodata": "",
+    "dot": false,
+    "ymin": "",
+    "ymax": "",
+    "removeOlder": "5",
+    "removeOlderPoints": "",
+    "removeOlderUnit": "60",
+    "cutout": 0,
+    "useOneColor": false,
+    "colors": [
+      "#1f77b4",
+      "#aec7e8",
+      "#ff7f0e",
+      "#2ca02c",
+      "#98df8a",
+      "#d62728",
+      "#ff9896",
+      "#9467bd",
+      "#c5b0d5"
+    ],
+    "useOldStyle": false,
+    "x": 1523.809585571289,
+    "y": 383.63499641418457,
+    "wires": [
+      [],
+      []
+    ],
+    "inputLabels": [
+      "msg.payload"
+    ]
+  },
+  {
+    "id": "ba017ae2.011248",
+    "type": "function",
+    "z": "b00783d3.2f248",
+    "name": "extract channel",
+    "func": "const channelCodes=[\n    {\n        CH: 0,\n        codes: [0]\n    },\n    {\n        CH: 1,\n        codes: [1]\n    },\n    {\n        CH: 2,\n        codes: [2]\n    },\n    {\n        CH: 3,\n        codes: [3]\n    },\n    {\n        CH: 4,\n        codes: [4]\n    },\n    {\n        CH: 5,\n        codes: [5]\n    },\n    {\n        CH: 6,\n        codes: [6]\n    },\n    {\n        CH: 7,\n        codes: [7]\n    },\n    {\n        CH: 8,\n        codes: [8]\n    },\n    {\n        CH: 9,\n        codes: [9]\n    }\n];\n\nconst transformCodeToChannel = code =>\n    channelCodes.filter(channelCode => channelCode.codes.includes(code))[0].CH;\n\nreturn {\n    payload: transformCodeToChannel(JSON.parse(msg.payload).CH)\n}",
+    "outputs": 1,
+    "noerr": 0,
+    "x": 385.22245025634766,
+    "y": 127.79382514953613,
+    "wires": [
+      [
+        "4b1f529e.f75acc"
+      ]
+    ],
+    "inputLabels": [
+      "msg.payload"
+    ],
+    "outputLabels": [
+      "msg.payload"
+    ]
+  },
+  {
+    "id": "477121bb.a6ddb",
+    "type": "function",
+    "z": "b00783d3.2f248",
+    "name": "extract number of connected users",
+    "func": "return {\n    payload: msg.payload.count\n}",
+    "outputs": 1,
+    "noerr": 0,
+    "x": 1200.4444274902344,
+    "y": 450.88897132873535,
+    "wires": [
+      [
+        "9f503918.ec6668",
+        "409e477b.e01338"
+      ]
+    ]
+  },
+  {
+    "id": "93189d13.41469",
+    "type": "function",
+    "z": "b00783d3.2f248",
+    "name": "group channel views by channels",
+    "func": "if (msg.payload.length === 0)\n    return {\n        payload: [{\n            \"series\": [\"X\"],\n            \"data\": [[]],\n            \"labels\": []\n        }]\n    };\n    \n\n\nconst maxChannel = Math.max(...msg.payload.map(message => message.CH));\n\nconst channelsViews = new Array(maxChannel + 1);\n\nfor (let i = 0; i < channelsViews.length; i++)\n    channelsViews[i] = msg.payload.filter(message => message.CH === i).length;\n\nconst channels = new Array(maxChannel + 1);\nfor (let i = 0; i < channels.length; i++)\n    channels[i] = i\n\nreturn {\n    payload: [{\n        \"series\": [\"X\"],\n        \"data\": [channelsViews],\n        \"labels\": channels\n    }]\n};",
+    "outputs": 1,
+    "noerr": 0,
+    "x": 1222.6666870117188,
+    "y": 269.77783012390137,
+    "wires": [
+      [
+        "ef2d32c3.993e"
+      ]
+    ],
+    "inputLabels": [
+      "msg.payload"
+    ],
+    "outputLabels": [
+      "msg.payload"
+    ]
+  },
+  {
+    "id": "9f866f95.5b969",
+    "type": "mongodb2 in",
+    "z": "b00783d3.2f248",
+    "service": "_ext_",
+    "configNode": "7d16c78f.cce198",
+    "name": "get all messages",
+    "collection": "messages",
+    "operation": "aggregate.toArray",
+    "x": 1196.888931274414,
+    "y": 182.66672706604004,
+    "wires": [
+      [
+        "93189d13.41469"
+      ]
+    ],
+    "outputLabels": [
+      "msg.payload"
+    ]
+  },
+  {
+    "id": "ef2d32c3.993e",
+    "type": "ui_chart",
+    "z": "b00783d3.2f248",
+    "name": "",
+    "group": "bf377b10.426148",
+    "order": 0,
+    "width": 0,
+    "height": 0,
+    "label": "Channel views",
+    "chartType": "bar",
+    "legend": "false",
+    "xformat": "HH:mm:ss",
+    "interpolate": "linear",
+    "nodata": "",
+    "dot": false,
+    "ymin": "",
+    "ymax": "",
+    "removeOlder": 1,
+    "removeOlderPoints": "",
+    "removeOlderUnit": "3600",
+    "cutout": 0,
+    "useOneColor": false,
+    "colors": [
+      "#1f77b4",
+      "#aec7e8",
+      "#ff7f0e",
+      "#2ca02c",
+      "#98df8a",
+      "#d62728",
+      "#ff9896",
+      "#9467bd",
+      "#c5b0d5"
+    ],
+    "useOldStyle": false,
+    "x": 1467.444492340088,
+    "y": 268.22227239608765,
+    "wires": [
+      [],
+      []
+    ],
+    "inputLabels": [
+      "msg.payload"
+    ]
+  },
+  {
+    "id": "86231938.ac1748",
+    "type": "debug",
+    "z": "b00783d3.2f248",
+    "name": "",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "x": 432.66673278808594,
+    "y": 552.0000953674316,
+    "wires": [],
+    "inputLabels": [
+      "msg.payload"
+    ]
+  },
+  {
+    "id": "a42697.c8a90968",
+    "type": "debug",
+    "z": "b00783d3.2f248",
+    "name": "",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "x": 385.4445037841797,
+    "y": 324.4445290565491,
+    "wires": [],
+    "inputLabels": [
+      "msg.payload"
+    ]
+  },
+  {
+    "id": "bccf0e5c.0beef",
+    "type": "function",
+    "z": "b00783d3.2f248",
+    "name": "decode channel codes",
+    "func": "const channelCodes=[\n    {\n        CH: 0,\n        codes: [0]\n    },\n    {\n        CH: 1,\n        codes: [1]\n    },\n    {\n        CH: 2,\n        codes: [2]\n    },\n    {\n        CH: 3,\n        codes: [3]\n    },\n    {\n        CH: 4,\n        codes: [4]\n    },\n    {\n        CH: 5,\n        codes: [5]\n    },\n    {\n        CH: 6,\n        codes: [6]\n    },\n    {\n        CH: 7,\n        codes: [7]\n    },\n    {\n        CH: 8,\n        codes: [8]\n    },\n    {\n        CH: 9,\n        codes: [9]\n    }\n];\n\nconst transformCodeToChannel = code =>\n    channelCodes.filter(channelCode => channelCode.codes.includes(code))[0].CH;\n\nreturn {\n    payload: {\n        user_name: msg.payload.user_name,\n        CH: transformCodeToChannel(msg.payload.CH),\n        datetime: Date.now()\n    }\n};",
+    "outputs": 1,
+    "noerr": 0,
+    "x": 557.6667251586914,
+    "y": 186.66672325134277,
+    "wires": [
+      [
+        "edf96426.1a4ea8"
+      ]
+    ],
+    "inputLabels": [
+      "msg.payload"
+    ],
+    "outputLabels": [
+      "msg.payload"
+    ]
+  },
+  {
+    "id": "edf96426.1a4ea8",
+    "type": "function",
+    "z": "b00783d3.2f248",
+    "name": "add user code",
+    "func": "const userCodes=[]\nuserCodes[\"stavalfi\"]=[1,0,0]\nuserCodes[\"Team10\"]=[0,1,0]\nuserCodes[\"elior\"]=[0,0,1]\n\nreturn {\n    payload: {\n        user_name: msg.payload.user_name,\n        user_code: userCodes[msg.payload.user_name],\n        CH: msg.payload.CH,\n        datetime: Date.now()\n    }\n};",
+    "outputs": 1,
+    "noerr": 0,
+    "x": 755.5556716918945,
+    "y": 186.11119079589844,
+    "wires": [
+      [
+        "63264864.610238",
+        "5fa33575.e187ec"
+      ]
+    ],
+    "inputLabels": [
+      "msg.payload"
+    ],
+    "outputLabels": [
+      "msg.payload"
+    ]
+  },
+  {
+    "id": "47eb7f56.ad589",
+    "type": "function",
+    "z": "b00783d3.2f248",
+    "name": "string to json",
+    "func": "return {\n    payload: JSON.parse(msg.payload)\n};",
+    "outputs": 1,
+    "noerr": 0,
+    "x": 336.00006103515625,
+    "y": 186.77783107757568,
+    "wires": [
+      [
+        "bccf0e5c.0beef"
+      ]
+    ],
+    "inputLabels": [
+      "msg.payload"
+    ],
+    "outputLabels": [
+      "msg.payload"
+    ]
+  },
+  {
+    "id": "8e43e84c.a1fa18",
+    "type": "debug",
+    "z": "b00783d3.2f248",
+    "name": "",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "x": 337.55562591552734,
+    "y": 61.111175537109375,
+    "wires": [],
+    "inputLabels": [
+      "msg.payload"
+    ]
+  },
+  {
+    "id": "f9d182bd.9f584",
+    "type": "mqtt out",
+    "z": "b00783d3.2f248",
+    "name": "classification producer",
+    "topic": "classification",
+    "qos": "",
+    "retain": "",
+    "broker": "38bfdb9d.3b33c4",
+    "x": 1176.8888778686523,
+    "y": 57.22227621078491,
+    "wires": []
+  },
+  {
+    "id": "5fa33575.e187ec",
+    "type": "function",
+    "z": "b00783d3.2f248",
+    "name": "message to array for prediction",
+    "func": "// return {\n//     payload: [[5.1,3.5,1.4,0.2]]\n// }\n\nreturn {\n    payload: [[...msg.payload.user_code,msg.payload.datetime]]\n};",
+    "outputs": 1,
+    "noerr": 0,
+    "x": 870.8889007568359,
+    "y": 61.5556526184082,
+    "wires": [
+      [
+        "f9d182bd.9f584"
+      ]
+    ],
+    "inputLabels": [
+      "msg.payload"
+    ],
+    "outputLabels": [
+      "msg.payload"
+    ]
+  },
+  {
+    "id": "a224a1b2.55a1b",
+    "type": "create dataset",
+    "z": "b00783d3.2f248",
+    "name": "",
+    "path": "/Users/stavalfi/.node-red/node_modules/node-red-contrib-machine-learning/test/iris.data",
+    "saveFolder": "/Users/stavalfi/.node-red/node_modules/node-red-contrib-machine-learning/test/datasets",
+    "saveName": "iris",
+    "input": "0,1,2,3",
+    "output": "4",
+    "trainingPartition": "",
+    "shuffle": true,
+    "seed": "",
+    "x": 1506.6032257080078,
+    "y": 671.7883243560791,
+    "wires": [
+      [
+        "328a5a89.8999d6"
+      ]
+    ]
+  },
+  {
+    "id": "d4bb7a9c.9665a8",
+    "type": "load dataset",
+    "z": "b00783d3.2f248",
+    "name": "",
+    "datasetFolder": "/Users/stavalfi/.node-red/node_modules/node-red-contrib-machine-learning/test/datasets",
+    "datasetName": "iris",
+    "partition": "train.csv",
+    "input": true,
+    "output": true,
+    "x": 1412.2540969848633,
+    "y": 793.2117786407471,
+    "wires": [
+      [
+        "784b299b.9c4b48"
+      ],
+      [
+        "81a64430.7b8cf8"
+      ]
+    ]
+  },
+  {
+    "id": "adefdd02.20532",
+    "type": "inject",
+    "z": "b00783d3.2f248",
+    "name": "start",
+    "topic": "",
+    "payload": "",
+    "payloadType": "date",
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "x": 1276.6032257080078,
+    "y": 671.7883243560791,
+    "wires": [
+      [
+        "a224a1b2.55a1b"
+      ]
+    ]
+  },
+  {
+    "id": "e47fa825.4c4a08",
+    "type": "inject",
+    "z": "b00783d3.2f248",
+    "name": "start",
+    "topic": "",
+    "payload": "",
+    "payloadType": "date",
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "x": 1271.9683990478516,
+    "y": 744.6403665542603,
+    "wires": [
+      [
+        "d4bb7a9c.9665a8"
+      ]
+    ]
+  },
+  {
+    "id": "d718a34a.2e183",
+    "type": "inject",
+    "z": "b00783d3.2f248",
+    "name": "start",
+    "topic": "",
+    "payload": "",
+    "payloadType": "date",
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "x": 1265.1429252624512,
+    "y": 951.4286561012268,
+    "wires": [
+      [
+        "a6a0ecd8.7a41f",
+        "4649f417.13624c"
+      ]
+    ]
+  },
+  {
+    "id": "328a5a89.8999d6",
+    "type": "debug",
+    "z": "b00783d3.2f248",
+    "name": "print",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "x": 1754.6032485961914,
+    "y": 669.7883386611938,
+    "wires": []
+  },
+  {
+    "id": "81a64430.7b8cf8",
+    "type": "debug",
+    "z": "b00783d3.2f248",
+    "name": "error",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "x": 1828.6826248168945,
+    "y": 800.2117214202881,
+    "wires": []
+  },
+  {
+    "id": "2f444636.a9cdea",
+    "type": "debug",
+    "z": "b00783d3.2f248",
+    "name": "print",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "x": 1826.6826095581055,
+    "y": 750.2117176055908,
+    "wires": []
+  },
+  {
+    "id": "4b36d9bf.211aa8",
+    "type": "predictor",
+    "z": "b00783d3.2f248",
+    "name": "decision tree classifier predictor",
+    "modelPath": "/Users/stavalfi/.node-red/node_modules/node-red-contrib-machine-learning/test/models",
+    "modelName": "dtc.b",
+    "x": 1510.4286727905273,
+    "y": 989.5716171264648,
+    "wires": [
+      [
+        "b4a2e696.3ad868"
+      ],
+      [
+        "28051f10.d926f"
+      ]
+    ]
+  },
+  {
+    "id": "784b299b.9c4b48",
+    "type": "decision tree classifier",
+    "z": "b00783d3.2f248",
+    "name": "decision tree classifier trainer",
+    "savePath": "/Users/stavalfi/.node-red/node_modules/node-red-contrib-machine-learning/test/models",
+    "saveName": "dtc.b",
+    "maxDepth": "",
+    "criterion": "gini",
+    "splitter": "best",
+    "x": 1623.539779663086,
+    "y": 772.0689029693604,
+    "wires": [
+      [
+        "2f444636.a9cdea"
+      ],
+      [
+        "81a64430.7b8cf8"
+      ]
+    ]
+  },
+  {
+    "id": "b4a2e696.3ad868",
+    "type": "assessment",
+    "z": "b00783d3.2f248",
+    "name": "",
+    "score": "accuracy_score",
+    "x": 1645.7145233154297,
+    "y": 892.857234954834,
+    "wires": [
+      [
+        "27a6bc18.9b67a4"
+      ],
+      [
+        "28051f10.d926f"
+      ]
+    ]
+  },
+  {
+    "id": "a6a0ecd8.7a41f",
+    "type": "load dataset",
+    "z": "b00783d3.2f248",
+    "name": "",
+    "datasetFolder": "/Users/stavalfi/.node-red/node_modules/node-red-contrib-machine-learning/test/datasets",
+    "datasetName": "iris",
+    "partition": "test.csv",
+    "input": false,
+    "output": true,
+    "x": 1408.0000610351562,
+    "y": 900.0000438690186,
+    "wires": [
+      [
+        "b4a2e696.3ad868"
+      ],
+      [
+        "28051f10.d926f"
+      ]
+    ]
+  },
+  {
+    "id": "4649f417.13624c",
+    "type": "load dataset",
+    "z": "b00783d3.2f248",
+    "name": "",
+    "datasetFolder": "/Users/stavalfi/.node-red/node_modules/node-red-contrib-machine-learning/test/datasets",
+    "datasetName": "iris",
+    "partition": "test.csv",
+    "input": true,
+    "output": false,
+    "x": 1342.285743713379,
+    "y": 1071.4286680221558,
+    "wires": [
+      [
+        "4b36d9bf.211aa8"
+      ],
+      [
+        "28051f10.d926f"
+      ]
+    ]
+  },
+  {
+    "id": "28051f10.d926f",
+    "type": "debug",
+    "z": "b00783d3.2f248",
+    "name": "error",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "x": 1823.7144393920898,
+    "y": 994.2860279083252,
+    "wires": []
+  },
+  {
+    "id": "27a6bc18.9b67a4",
+    "type": "debug",
+    "z": "b00783d3.2f248",
+    "name": "print",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "x": 1828.000259399414,
+    "y": 887.1431179046631,
+    "wires": []
+  },
+  {
+    "id": "b6066f76.0ce6f",
+    "type": "predictor",
+    "z": "b00783d3.2f248",
+    "name": "decision tree classifier predictor",
+    "modelPath": "/Users/stavalfi/.node-red/node_modules/node-red-contrib-machine-learning/test/models",
+    "modelName": "dtc.b",
+    "x": 575.1111755371094,
+    "y": 852.7778797149658,
+    "wires": [
+      [
+        "a1d1e8b5.c5fac8"
+      ],
+      [
+        "620bf4f2.7be96c"
+      ]
+    ],
+    "inputLabels": [
+      "msg.payload"
+    ],
+    "outputLabels": [
+      "msg.payload",
+      "msg.payload"
+    ]
+  },
+  {
+    "id": "a1d1e8b5.c5fac8",
+    "type": "mqtt out",
+    "z": "b00783d3.2f248",
+    "name": "prediction producer",
+    "topic": "prediction",
+    "qos": "",
+    "retain": "",
+    "broker": "9b469b5f.d8d148",
+    "x": 862.1111526489258,
+    "y": 752.3333511352539,
+    "wires": [],
+    "inputLabels": [
+      "msg.payload"
+    ]
+  },
+  {
+    "id": "620bf4f2.7be96c",
+    "type": "debug",
+    "z": "b00783d3.2f248",
+    "name": "error",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "x": 839.2223358154297,
+    "y": 818.1111145019531,
+    "wires": [],
+    "inputLabels": [
+      "msg.payload"
+    ]
+  },
+  {
+    "id": "b048ecdb.935a2",
+    "type": "mqtt in",
+    "z": "b00783d3.2f248",
+    "name": "classification consumer",
+    "topic": "classification",
+    "qos": "2",
+    "broker": "9b469b5f.d8d148",
+    "x": 121.4444580078125,
+    "y": 754.6666812896729,
+    "wires": [
+      [
+        "53421618.cc1b68",
+        "39f4949f.63c17c"
+      ]
+    ],
+    "outputLabels": [
+      "msg.payload"
+    ]
+  },
+  {
+    "id": "39f4949f.63c17c",
+    "type": "debug",
+    "z": "b00783d3.2f248",
+    "name": "",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "x": 419.7222785949707,
+    "y": 755.9999914169312,
+    "wires": [],
+    "inputLabels": [
+      "msg.payload"
+    ]
+  },
+  {
+    "id": "53421618.cc1b68",
+    "type": "function",
+    "z": "b00783d3.2f248",
+    "name": "string to json",
+    "func": "return {\n    payload: JSON.parse(msg.payload)\n};",
+    "outputs": 1,
+    "noerr": 0,
+    "x": 291.6667709350586,
+    "y": 855.7778053283691,
+    "wires": [
+      [
+        "b6066f76.0ce6f",
+        "39f4949f.63c17c"
+      ]
+    ],
+    "inputLabels": [
+      "msg.payload"
+    ],
+    "outputLabels": [
+      "msg.payload"
+    ]
+  },
+  {
+    "id": "6611d78b.e441b8",
+    "type": "debug",
+    "z": "b00783d3.2f248",
+    "name": "",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "x": 321.76196670532227,
+    "y": 946.5238265991211,
+    "wires": [],
+    "inputLabels": [
+      "msg.payload"
+    ]
+  },
+  {
+    "id": "ec8b67eb.448e88",
+    "type": "mqtt in",
+    "z": "b00783d3.2f248",
+    "name": "prediction consumer",
+    "topic": "prediction",
+    "qos": "2",
+    "broker": "9b469b5f.d8d148",
+    "x": 112.55558013916016,
+    "y": 945.8888521194458,
+    "wires": [
+      [
+        "6611d78b.e441b8"
+      ]
+    ]
+  },
+  {
+    "id": "1c0a29e3.7dbb56",
+    "type": "mqtt out",
+    "z": "b00783d3.2f248",
+    "name": "fake messages producer",
+    "topic": "esp/tomer",
+    "qos": "",
+    "retain": "",
+    "broker": "38bfdb9d.3b33c4",
+    "x": 637.1428985595703,
+    "y": 1041.4286193847656,
+    "wires": [],
+    "inputLabels": [
+      "msg.payload"
+    ]
+  },
+  {
+    "id": "be095909.9b46c8",
+    "type": "inject",
+    "z": "b00783d3.2f248",
+    "name": "create fake message",
+    "topic": "",
+    "payload": "",
+    "payloadType": "date",
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "x": 128.42856979370117,
+    "y": 1036.142822265625,
+    "wires": [
+      [
+        "380e8e1e.92b042"
+      ]
+    ],
+    "outputLabels": [
+      "time.payload"
+    ]
+  },
+  {
+    "id": "2b87f6d5.3ab13a",
+    "type": "inject",
+    "z": "b00783d3.2f248",
+    "name": "create fake logged in user",
+    "topic": "",
+    "payload": "",
+    "payloadType": "date",
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "x": 159.42856979370117,
+    "y": 1284.1428260803223,
+    "wires": [
+      [
+        "9136d4a2.c8a438"
+      ]
+    ],
+    "outputLabels": [
+      "time.payload"
+    ]
+  },
+  {
+    "id": "ac3a6e8d.814e2",
+    "type": "mqtt out",
+    "z": "b00783d3.2f248",
+    "name": "fake logged in users producer",
+    "topic": "esp/tomer/connect",
+    "qos": "",
+    "retain": "",
+    "broker": "38bfdb9d.3b33c4",
+    "x": 730.8571472167969,
+    "y": 1276.4286060333252,
+    "wires": []
+  },
+  {
+    "id": "9136d4a2.c8a438",
+    "type": "function",
+    "z": "b00783d3.2f248",
+    "name": "add random number to user",
+    "func": "return {\n    payload: \"stavalfi\" + Date.now().toString()\n}",
+    "outputs": 1,
+    "noerr": 0,
+    "x": 429.4285774230957,
+    "y": 1281.142825603485,
+    "wires": [
+      [
+        "ac3a6e8d.814e2"
+      ]
+    ],
+    "inputLabels": [
+      "msg.payload"
+    ],
+    "outputLabels": [
+      "msg.payload"
+    ]
+  },
+  {
+    "id": "73486715.71f0f8",
+    "type": "inject",
+    "z": "b00783d3.2f248",
+    "name": "create fake logged out user",
+    "topic": "",
+    "payload": "",
+    "payloadType": "date",
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "x": 160.42856979370117,
+    "y": 1160.1428241729736,
+    "wires": [
+      [
+        "31fcaec5.7ef372"
+      ]
+    ],
+    "outputLabels": [
+      "time.payload"
+    ]
+  },
+  {
+    "id": "65677cf.8b61e84",
+    "type": "mqtt out",
+    "z": "b00783d3.2f248",
+    "name": "fake connected users producer",
+    "topic": "esp/tomer/close",
+    "qos": "",
+    "retain": "",
+    "broker": "38bfdb9d.3b33c4",
+    "x": 764.5714874267578,
+    "y": 1161.5713739395142,
+    "wires": [],
+    "inputLabels": [
+      "msg.payload"
+    ]
+  },
+  {
+    "id": "31fcaec5.7ef372",
+    "type": "function",
+    "z": "b00783d3.2f248",
+    "name": "add random number to user",
+    "func": "return {\n    payload: \"stavalfi\"\n};",
+    "outputs": 1,
+    "noerr": 0,
+    "x": 428.42858505249023,
+    "y": 1163.1428241729736,
+    "wires": [
+      [
+        "65677cf.8b61e84"
+      ]
+    ],
+    "inputLabels": [
+      "msg.payload"
+    ],
+    "outputLabels": [
+      "msg.payload"
+    ]
+  },
+  {
+    "id": "380e8e1e.92b042",
+    "type": "function",
+    "z": "b00783d3.2f248",
+    "name": "create random massage",
+    "func": "return {\n   payload: {\n        CH: Math.round(Math.random()*9),\n        user_name: \"stavalfi\"\n   }\n}",
+    "outputs": 1,
+    "noerr": 0,
+    "x": 365.4285774230957,
+    "y": 1038.142822265625,
+    "wires": [
+      [
+        "1c0a29e3.7dbb56"
+      ]
+    ],
+    "inputLabels": [
+      "msg.payload"
+    ],
+    "outputLabels": [
+      "msg.payload"
+    ]
+  },
+  {
+    "id": "38bfdb9d.3b33c4",
+    "type": "mqtt-broker",
+    "z": "",
+    "name": "",
+    "broker": "iot.eclipse.org",
+    "port": "1883",
+    "clientid": "",
+    "usetls": false,
+    "compatmode": true,
+    "keepalive": "60",
+    "cleansession": true,
+    "birthTopic": "",
+    "birthQos": "0",
+    "birthPayload": "",
+    "closeTopic": "",
+    "closePayload": "",
+    "willTopic": "",
+    "willQos": "0",
+    "willPayload": ""
+  },
+  {
+    "id": "7d16c78f.cce198",
+    "type": "mongodb2",
+    "z": "",
+    "uri": "mongodb://ds161411.mlab.com:61411/stavdb",
+    "name": "",
+    "options": "",
+    "parallelism": "-1"
+  },
+  {
+    "id": "bf377b10.426148",
+    "type": "ui_group",
+    "z": "",
+    "name": "Graphs",
+    "tab": "372afcc0.4474e4",
+    "disp": true,
+    "width": "6",
+    "collapse": false
+  },
+  {
+    "id": "9b87206f.b6bac",
+    "type": "ui_group",
+    "z": "",
+    "name": "Users",
+    "tab": "372afcc0.4474e4",
+    "disp": true,
+    "width": "6",
+    "collapse": false
+  },
+  {
+    "id": "9b469b5f.d8d148",
+    "type": "mqtt-broker",
+    "z": "",
+    "name": "",
+    "broker": "iot.eclipse.org",
+    "port": "1883",
+    "clientid": "",
+    "usetls": false,
+    "compatmode": true,
+    "keepalive": "60",
+    "cleansession": true,
+    "birthTopic": "",
+    "birthQos": "0",
+    "birthPayload": "",
+    "willTopic": "",
+    "willQos": "0",
+    "willPayload": ""
+  },
+  {
+    "id": "372afcc0.4474e4",
+    "type": "ui_tab",
+    "z": "",
+    "name": "Home",
+    "icon": "dashboard"
+  }
+]
